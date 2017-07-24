@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<glicApplication id="idvalue0" applicationID="MDC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="controller.xsd">
+	<formBeans>
+		<formBean name="GrievanceForm" type="com.glic.mdc.presentation.form.GrievanceForm" />
+	</formBeans>
+	<globalExceptions>
+		<exception type="com.glic.ea.framework.error.GlicException" key="errors.key" handler="com.glic.ea.framework.controller.GlicExceptionHandler">
+			<forward name="error" path="/servlet/ViewServlet" fileName="errormessage.xsl" type="error"></forward>
+		</exception>
+	</globalExceptions>
+	<globalForwards>
+		<forward name="error" path="/servlet/ViewServlet" fileName="mdc_error_page.xsl" type="error"></forward>
+	</globalForwards>
+	<actionMappings>
+		<action type="com.glic.mdc.presentation.action.GrievanceAction" validate="true" path="/addGrievance" scope="session" name="GrievanceForm">
+			<forward name="showWelcome" path="/servlet/ViewServlet" fileName="mdc_welcome.xsl" />
+			<forward name="showGrievanceForm" path="/servlet/ViewServlet" fileName="mdc_grievance_form.xsl" />
+			<forward name="showConfirmGrievanceForm" path="/servlet/ViewServlet" fileName="mdc_grievance_form_confirm.xsl" />
+			<forward name="mailGrievanceForm" path="/servlet/ViewServlet" fileName="mdc_thanks.xsl" />
+		</action>
+	</actionMappings>
+	<messageResources parameter="com.glic.mdc.common.util.errorResource" key="errorResource" />
+</glicApplication>

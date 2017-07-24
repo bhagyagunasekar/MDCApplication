@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+   <web-app id="WebApp">
+      <display-name>MDCSiteWeb</display-name>
+      <context-param >
+         <param-name>(New ContextParameter)</param-name>
+         <param-value></param-value>
+      </context-param>
+      <servlet>
+         <servlet-name>EAFrameworkServlet</servlet-name>
+         <display-name>EAFrameworkServlet</display-name>
+         <servlet-class>com.glic.ea.framework.controller.EAFrameworkServlet</servlet-class>
+      </servlet>
+      <servlet>
+         <servlet-name>ViewServlet</servlet-name>
+         <display-name>ViewServlet</display-name>
+         <servlet-class>com.glic.ea.framework.view.ViewServlet</servlet-class>
+      </servlet>
+      <servlet-mapping>
+         <servlet-name>EAFrameworkServlet</servlet-name>
+         <url-pattern>*.do</url-pattern>
+      </servlet-mapping>
+      <servlet-mapping>
+         <servlet-name>ViewServlet</servlet-name>
+         <url-pattern>/servlet/ViewServlet</url-pattern>
+      </servlet-mapping>
+      <welcome-file-list >
+         <welcome-file>addGrievance.do</welcome-file>
+         <welcome-file>index.html</welcome-file>
+      </welcome-file-list>
+   </web-app>

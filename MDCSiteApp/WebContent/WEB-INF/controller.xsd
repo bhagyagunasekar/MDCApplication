@@ -1,0 +1,1489 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0"
+   xml:lang="en">
+
+   <xsd:element name="glicApplication">
+      <xsd:annotation>
+         <xsd:documentation>
+            ========== Top Level Elements
+            ============================== The "glicApplication" element is the
+            root of the configuration file hierarchy, and contains nested
+            elements for all of the other configuration settings.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence minOccurs="1" maxOccurs="1">
+            <xsd:element ref="import" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="dataSources" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="formBeans" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="globalExceptions" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="globalForwards" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="actionMappings" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="controllers" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="services" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="listeners" type="Listeners" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="adapters" type="Adapters" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="messageResources" minOccurs="0"
+               maxOccurs="unbounded"/>
+            <xsd:element ref="plugin" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="views" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="applicationID" type="xsd:string" use="optional"/>
+         <xsd:attribute name="applicationKey" type="xsd:string" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="import">
+      <xsd:annotation>
+         <xsd:documentation>
+            This element is used to import additional application framework
+            configuration files for the current application. If the application
+            framework configuration file is too large to handle it can be split
+            into multiple files. The splitting process should also ensure that
+            each configuration file that will be imported should also conform
+            to the framework XML schema. The additional configuration files
+            should be imported into the main configuration file,
+            glicConfig.xml.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:attribute name="path" type="xsd:string" use="required"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="dataSources">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "dataSources" element describes a set of JDBC 2.0 Standard
+            Extension data source objects which will be configured according to
+            the nested "dataSource" elements found inside.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="dataSource" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="dataSource">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "dataSource" element describes a JDBC 2.0 Standard Extension
+            data source object (that implements javax.sql.DataSource) which
+            will be configured according to the properties and nested elements
+            found here, and made available as a servlet context attribute (i.e.
+            application scope bean). The following attributes are required:
+            
+         className Implementation subclass of the standard configuration
+            bean, if you do not want to use the standard value.
+            [org.apache.struts.config.DataSourceConfig] 
+         key Servlet context
+            attribute key under which this data source will be stored. Default
+            is the value specified by string constant Action.DATA_SOURCE_KEY.
+            NOTE: The attribute under which this data source is actually stored
+            will be the key value suffixed by the application prefix for this
+            sub-application type Fully qualified Java class name of the data
+            source implementation class. This class must implement
+            "javax.sql.DataSource" and be configurable totally from JavaBeans
+            properties. [org.apache.struts.util.GenericDataSource]
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="setProperty" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="className" type="xsd:string" use="optional"/>
+         <xsd:attribute name="key" type="xsd:string" use="optional"/>
+         <xsd:attribute name="type" type="xsd:string" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="globalExceptions">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "globalExceptions" element configures the global handling of
+            exceptions thrown by Actions to mappable resources (identified by
+            application-relative URI paths). A global "exception" handler for a
+            particular exception class can be locally overridden by defining an
+            "exception" element with the same "type" attribute.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="exception" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="exception">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "exception" element describes a mapping of an exception that
+            may occur during Action delegation and should be handled by the
+            controller. 
+         className Implementation subclass of the standard
+            configuration bean, if you do not want to use the standard value.
+            [com.glic.ea.framework.config.GlicExceptionConfig] 
+         handler Fully qualified
+            Java class name of the exception handler which should handle this
+            exception. [com.glic.ea.framework.controller.GlicExceptionHandler] 
+         key Message
+            resources key specifying the error message associated with this
+            exception. 
+         path The application-relative path of the resource to
+            forward to if this exception occurs. 
+         scope Identifier of the scope
+            ("request" or "session") within which the resulting GlicAction will
+            be made accessible 
+         type Fully qualified Java class name of the
+            exception that is to be handled.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence minOccurs="1" maxOccurs="1">
+            <xsd:element ref="icon" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="displayName" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="description" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="forward" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="setProperty" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="className" type="xsd:string" use="optional"/>
+         <xsd:attribute name="handler" type="xsd:string" use="required"/>
+         <xsd:attribute name="key" type="xsd:string" use="required"/>
+         <xsd:attribute name="path" type="xsd:string" use="optional"/>
+         <xsd:attribute name="scope" type="xsd:string" use="optional"/>
+         <xsd:attribute name="type" type="xsd:string" use="required"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="formBeans">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "formBeans" element is the root of the set of form bean
+            descriptors for this application. The following attributes are
+            defined: 
+         type Fully qualified Java class name of the implementation
+            class used for GlicForm objects.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="formBean" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="type" type="xsd:string" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="formBean">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "formBean" element describes a particular form bean, which is
+            a JavaBean that implements the
+            com.glic.ea.framework.controller.GlicForm class. The following
+            attributes are defined: 
+         className Implementation subclass of the
+            standard configuration bean, if you do not want to use the standard
+            value. [org.apache.struts.config.FormBeanConfig] 
+         dynamic Is the
+            class identified by the "type" attribute a DynaActionForm with
+            dynamic properties? If the type attribute is set to
+            "org.apache.struts.action.DynaActionForm", this property defaults
+            to true, otherwise it defaults to false. 
+         name Unique identifier of
+            this bean, used to reference it in corresponding action mappings.
+            type Fully qualified Java class name of the implementation class to
+            be used or generated
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence minOccurs="1" maxOccurs="1">
+            <xsd:element ref="icon" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="displayName" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="description" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="setProperty" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="formProperty" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="className" type="xsd:string" use="optional"/>
+         <xsd:attribute name="dynamic" use="optional">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="true"/>
+                  <xsd:enumeration value="false"/>
+                  <xsd:enumeration value="yes"/>
+                  <xsd:enumeration value="no"/>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:attribute>
+         <xsd:attribute name="name" type="xsd:string" use="required"/>
+         <xsd:attribute name="type" type="xsd:string" use="required"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="formProperty">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "formProperty" element describes a particular JavaBean
+            property of a form bean. It is utilized only when the "type" of the
+            surrounding "formBean" element is
+            "org.apache.struts.action.DynaActionForm" (or a subclass of that
+            class), and thus supports dynamic properties. The following
+            attributes are defined: 
+         className Implementation subclass of the
+            standard configuration bean, if you do not want to use the standard
+            value. [org.apache.struts.config.FormPropertyConfig] 
+         initial String
+            representation of the initial value for this property. If not
+            specified, primitives will by initialized to zero and objects to
+            null. 
+         name JavaBeans property name of the property being described
+            by this element. 
+         type Fully qualified Java class name of the
+            implementation class of this bean property, optionally followed by
+            "[]" to indicate that this property is indexed.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="setProperty" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="className" type="xsd:string" use="optional"/>
+         <xsd:attribute name="initial" type="xsd:string" use="optional"/>
+         <xsd:attribute name="name" type="xsd:string" use="required"/>
+         <xsd:attribute name="type" type="xsd:string" use="required"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="globalForwards">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "globalForwards" element configures the global mappings of
+            logical names (used within the application) to mappable resources
+            (identified by application-relative URI paths). A global "forward"
+            with a particular name can be locally overridden by defining a
+            "forward" of the same name within an "action" element. The
+            following attribute are defined: 
+         type Fully qualified Java class
+            name of the implementation class used for GlicForward objects.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="forward" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="type" type="xsd:string" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="forward">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "forward" element describes a mapping of a logical name (used
+            within the application) to a mappable resource identified by an
+            application-relative URI path. The following attributes are
+            defined: 
+         className Implementation subclass of the standard
+            configuration bean, if you do not want to use the standard value.
+	         [com.glic.ea.framework.controller.GlicActionForward] 
+	      contextRelative Set to
+            "true" if the path should be considered relative to the entire web
+            application, rather than prefixed with the sub-application prefix,
+            if it starts with a "/". 
+         name Unique identifier of this forward,
+            used to reference it in application action classes. 
+         path The
+            application-relative or context-relative path of the mapped
+            resource (determined by the selected value for the
+            "contextRelative" attribute). 
+         redirect Set to "true" if
+            sendRedirect() should be used to forward to this resource, or
+            "false" in order to use RequestDispatcher.forward() instead. 
+         type
+            Set to "error" if should be used to forward to in case of error, or
+            "default" in order to use as any other forward
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence minOccurs="1" maxOccurs="1">
+            <xsd:element ref="icon" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="displayName" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="description" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="setProperty" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="className" type="xsd:string" use="optional"/>
+         <xsd:attribute name="contextRelative" use="optional">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="true"/>
+                  <xsd:enumeration value="false"/>
+                  <xsd:enumeration value="yes"/>
+                  <xsd:enumeration value="no"/>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:attribute>
+         <xsd:attribute name="name" type="xsd:string" use="required"/>
+         <xsd:attribute name="path" type="xsd:string" use="required"/>
+         <xsd:attribute name="redirect" use="optional">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="true"/>
+                  <xsd:enumeration value="false"/>
+                  <xsd:enumeration value="yes"/>
+                  <xsd:enumeration value="no"/>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:attribute>
+         <xsd:attribute name="fileName" type="xsd:string" use="optional"/>
+         <xsd:attribute name="contentType" type="xsd:string" use="optional"/>
+         <xsd:attribute name="type" use="optional">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="error"/>
+                  <xsd:enumeration value="default"/>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:attribute>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="actionMappings">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "actionMappings" element configures the mappings from
+            submitted request paths to the corresponding Action classes that
+            should be used to process these requests. The following attributes
+            are defined: 
+         type Fully qualified Java class name of the
+            ActionMapping implementation class to be used.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="action" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="type" type="xsd:string" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="action">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "action" element describes a mapping from a request paths to
+            the corresponding Action classes that should be used to process
+            these requests. The following attributes are defined: 
+         attribute
+            Name of the request-scope or session-scope attribute under which
+            our form bean is accessed, if it is other than the bean's specified
+            "name". Optional if "name" is specified, else not allowed.
+         className Implementation subclass of the standard configuration
+            bean, if you do not want to use the standard value.
+	         [com.glic.ea.framework.controller.GlicActionMapping]
+	      forward
+            Application-relative path of the servlet or JSP resource that will
+            process this request, instead of instantiating and calling the
+            Action class specified by "type". Exactly one of "forward",
+            "include", or "type" must be specified. include
+            Application-relative path of the servlet or JSP resource that will
+            process this request, instead of instantiating and calling the
+            Action class specified by "type". Exactly one of "forward",
+            "include", or "type" must be specified. input Application-relative
+            path of the input form to which control should be returned if a
+            validation error is encountered. Required if "name" is specified
+            and the input bean returns validation errors. Optional if "name" is
+            specified and the input bean does not return validation errors. Not
+            allowed if "name" is not specified.
+         name Name of the form bean, if
+            any, that is associated with this action. 
+         path The
+            Application-relative path of the submitted request, starting with a
+            "/" character, and without the filename extension if extension
+            mapping is used. NOTE: Do *not* include a period in your path name,
+            because it will look like a filename extension and cause your
+            Action to not be located. parameter General purpose configuration
+            parameter that can be used to pass extra information to the Action
+            selected by this mapping. 
+         prefix Prefix used to match request
+            parameter names to form bean property names, if any. Optional if
+            "name" is specified, else not allowed. 
+         scope Identifier of the
+            scope ("request" or "session") within which our form bean is
+            accessed, if any. Optional if "name" is specified, else not
+            allowed. 
+         suffix Suffix used to match request parameter names to
+            form bean property names, if any. Optional if "name" is specified,
+            else not allowed. 
+         type Fully qualified Java class name of the
+            GlicAction class (implements com.glic.ea.framework.controller.GlicAction) to be
+            used to process requests for this mapping if the "forward" or
+            "include" attribute is not included. Exactly one of "forward",
+            "include", or "type" must be specified. 
+         unknown Set to "true" if
+            this action should be configured as the default for this
+            application, to handle all requests not handled by another action.
+            Only one action can be defined as a default within a single
+            application. validate Set to "true" if the validate() method of the
+            form bean should be called prior to calling this action, or set to
+            "false" if you do not want validation performed.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence minOccurs="1" maxOccurs="1">
+            <xsd:element ref="icon" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="displayName" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="description" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="setProperty" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="exception" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="forward" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="attribute" type="xsd:string" use="optional"/>
+         <xsd:attribute name="className" type="xsd:string" use="optional"/>
+         <xsd:attribute name="forward" type="xsd:string" use="optional"/>
+         <xsd:attribute name="include" type="xsd:string" use="optional"/>
+         <xsd:attribute name="input" type="xsd:string" use="optional"/>
+         <xsd:attribute name="name" type="xsd:string" use="optional"/>
+         <xsd:attribute name="parameter" type="xsd:string" use="optional"/>
+         <xsd:attribute name="path" type="xsd:string" use="required"/>
+         <xsd:attribute name="prefix" type="xsd:string" use="optional"/>
+         <xsd:attribute name="scope" use="optional">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="request"/>
+                  <xsd:enumeration value="session"/>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:attribute>
+         <xsd:attribute name="suffix" type="xsd:string" use="optional"/>
+         <xsd:attribute name="type" type="xsd:string" use="optional"/>
+         <xsd:attribute name="unknown" use="optional">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="true"/>
+                  <xsd:enumeration value="false"/>
+                  <xsd:enumeration value="yes"/>
+                  <xsd:enumeration value="no"/>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:attribute>
+         <xsd:attribute name="validate" use="optional">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="true"/>
+                  <xsd:enumeration value="false"/>
+                  <xsd:enumeration value="yes"/>
+                  <xsd:enumeration value="no"/>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:attribute>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="controllers">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "controllers" element configures the various controllers.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="controller" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="controller">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "controller" element specifies the controller characterstics
+            for requests directed to this application. The following attributes
+            are defined: 
+         name The unique name of the controller within the set
+            of controllers servletName The sets of servlets that needs this
+            controller. Servlets by default will be using the default
+            controller. 
+         bufferSize The size of the input buffer used when
+            processing file uploads. [4096] 
+         className Implementation subclass
+            of the standard configuration bean subclassed from the standard
+            bean, if you do not want to use the standard value.
+	         [com.glic.ea.framework.GlicControllerConfig]
+	      contentType Default
+            content type (and optional character encoding) to be set on each
+            response. May be overridden by a forwarded-to servlet or JSP page.
+            [text/html] 
+         debug Debugging detail level for this application. [0]
+         locale Set to true if you want a Locale object stored in the user's
+            session if not already present. [true] 
+         maxFileSize The maximum size
+            (in bytes) of a file to be accepted as a file upload. Can be
+            expressed as a number followed by a "K", "M", or "G", which are
+            interpreted to mean kilobytes, megabytes, or gigabytes,
+            respectively. [250M] 
+         multipartClass The fully qualified Java class
+            name of the multipart request handler class to be used.
+            [org.apache.struts.upload.DiskMultipartRequestHandler] 
+         nocache Set
+            to (code)true(/code) if you want EAF to add HTTP headers for
+            defeating caching to every response. [false] 
+         processorClass The
+            fully qualified Java class name of the RequestProcessor class to be
+            used. [org.apache.struts.action.RequestProcessor] 
+         tempDir Temporary
+            working directory to use when processing file uploads. [Directory
+            provided by servlet container]
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="servletName" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="setProperty" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="bufferSize" type="xsd:string" use="optional"/>
+         <xsd:attribute name="className" type="xsd:string" use="optional"/>
+         <xsd:attribute name="contentType" type="xsd:string" use="optional"/>
+         <xsd:attribute name="debug" type="xsd:string" use="optional"/>
+         <xsd:attribute name="locale" use="optional">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="true"/>
+                  <xsd:enumeration value="false"/>
+                  <xsd:enumeration value="yes"/>
+                  <xsd:enumeration value="no"/>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:attribute>
+         <xsd:attribute name="maxFileSize" type="xsd:string" use="optional"/>
+         <xsd:attribute name="multipartClass" type="xsd:string" use="optional"/>
+         <xsd:attribute name="nocache" use="optional">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="true"/>
+                  <xsd:enumeration value="false"/>
+                  <xsd:enumeration value="yes"/>
+                  <xsd:enumeration value="no"/>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:attribute>
+         <xsd:attribute name="processorClass" type="xsd:string" use="optional"/>
+         <xsd:attribute name="tempDir" type="xsd:string" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="services">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "services" element configures the various services.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="ejbService" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="service" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="webService" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="contentService" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="jmsService" type="JMSService" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="ruleServices" type="RuleServices" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="cicsService" type="CICSService" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="dominoService" type="DominoService" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="inquiryURLJndiName" type="xsd:string"
+            use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="ejbService">
+      <xsd:annotation>
+         <xsd:documentation>
+            jndiName JNDIName of the ejb that will be used to call the
+            home interface contextFactory Context Factory for the lookup. If
+            none is provided the default will be used. providerURL providerURL
+            of the JNDI for home interface lookup. By default, localhost will
+            be provider URL 
+         home The fully qualified className of the home
+            interface that will be invoked.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="setProperty" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="name" type="xsd:string"/>
+         <xsd:attribute name="jndiName" type="xsd:string"/>
+         <xsd:attribute name="home" type="xsd:string"/>
+         <xsd:attribute name="contextFactory" type="xsd:string" use="optional"/>
+         <xsd:attribute name="providerURL" type="xsd:string" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="service">
+      <xsd:annotation>
+         <xsd:documentation>
+         name unique name of the service. used for caching. 
+         className
+            ClassName to be instantiated. Must be of classType
+            com.glic.ea.framework.config.ServiceConfig or any of its
+            subclasses.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="setProperty" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="className" type="xsd:string"/>
+         <xsd:attribute name="name" type="xsd:string"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="webService">
+      <xsd:annotation>
+         <xsd:documentation>
+         name unique name of the service. used for caching. 
+         className
+            className to be instantiated.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="setProperty" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="business" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="tmodel" minOccurs="0" maxOccurs="unbounded">
+               <xsd:complexType>
+                  <xsd:sequence>
+                     <xsd:element name="findQualifiers" type="qualifiers"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+                     <xsd:element name="identifierBag" type="bag" minOccurs="0"
+                        maxOccurs="1"/>
+                     <xsd:element name="categoryBag" type="bag" minOccurs="0"
+                        maxOccurs="1"/>
+                  </xsd:sequence>
+                  <xsd:attribute name="tmodelName" type="xsd:string"
+                     use="optional"/>
+                  <xsd:attribute name="tmodelKey" type="xsd:string"
+                     use="optional"/>
+                  <xsd:attribute name="maxRows" type="xsd:string" use="optional"/>
+               </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="findQualifiers" type="qualifiers" minOccurs="0"
+               maxOccurs="1"/>
+         </xsd:sequence>
+         <xsd:attribute name="className" type="xsd:string"/>
+         <xsd:attribute name="name" type="xsd:string"/>
+         <xsd:attribute name="publishURLJndiName" type="xsd:string"
+            use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="business">
+      <xsd:annotation>
+         <xsd:documentation>
+            The businessName is the name that will be used to search
+            businesses registered in UDDI Registry. 
+         Maxrows is the limit on the
+            number of results returned based on the name match. By default
+            search uses STARTS_WITH behavior 
+         keyedReferences will be used
+            to search businesses registered in UDDI Registry and return the
+            list of businesses that are categorized under the below specified
+            values. By default, the search uses AND_ALL_KEYS behavior
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="discoveryURLs" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="identifierBag" type="bag" minOccurs="0"
+               maxOccurs="1"/>
+            <xsd:element name="categoryBag" type="bag" minOccurs="0"
+               maxOccurs="1"/>
+            <xsd:element ref="tModelBag" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="findQualifiers" type="qualifiers" minOccurs="0"
+               maxOccurs="1"/>
+            <xsd:element name="businessService" minOccurs="0" maxOccurs="1">
+               <xsd:complexType>
+                  <xsd:sequence>
+                     <xsd:element name="categoryBag" type="bag" minOccurs="0"
+                        maxOccurs="1"/>
+                     <xsd:element ref="tModelBag" minOccurs="0" maxOccurs="1"/>
+                     <xsd:element name="findQualifiers" type="qualifiers"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+                  </xsd:sequence>
+                  <xsd:attribute name="serviceName" type="xsd:string"
+                     use="optional"/>
+                  <xsd:attribute name="serviceKey" type="xsd:string"
+                     use="optional"/>
+                  <xsd:attribute name="maxRows" type="xsd:string" use="optional"/>
+               </xsd:complexType>
+            </xsd:element>
+         </xsd:sequence>
+         <xsd:attribute name="businessName" type="xsd:string" use="optional"/>
+         <xsd:attribute name="businessKey" type="xsd:string" use="optional"/>
+         <xsd:attribute name="maxRows" type="xsd:string" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:complexType name="qualifiers">
+      <xsd:sequence>
+         <xsd:element name="findQualifier" type="xsd:string" minOccurs="1"
+            maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+
+   <xsd:element name="tModelBag">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="tModelKey" type="xsd:string" minOccurs="1"
+               maxOccurs="unbounded"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:complexType name="bag">
+      <xsd:sequence>
+         <xsd:element name="keyedReference" minOccurs="1" maxOccurs="unbounded">
+            <xsd:complexType>
+               <xsd:attribute name="keyName" type="xsd:string" use="optional"/>
+               <xsd:attribute name="keyValue" type="xsd:string" use="required"/>
+               <xsd:attribute name="tmodelKey" type="xsd:string" use="optional"/>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+
+   <xsd:element name="discoveryURLs">
+      <xsd:annotation>
+         <xsd:documentation></xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="discoveryURL" minOccurs="1" maxOccurs="unbounded">
+               <xsd:complexType>
+                  <xsd:simpleContent>
+                     <xsd:extension base="xsd:string">
+                        <xsd:attribute name="useType" type="xsd:string"
+                           use="required"/>
+                     </xsd:extension>
+                  </xsd:simpleContent>
+               </xsd:complexType>
+            </xsd:element>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="messageResources">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "messageResources" element specifies the characteristics of
+            the MessageResources containing the messages for this application.
+            The following attributes are defined: 
+         className Implementation
+            subclass of the standard configuration bean, if you do not want to
+            use the standard value.
+            [org.apache.struts.config.MessageResourcesConfig] 
+         factory Fully
+            qualified Java class name of the MessageResourcesFactory class we
+            should use, if any. By default, this is set to
+            org.apache.struts.util.PropertyMessageResourcesFactory. 
+         key Servlet
+            context attribute key under which this message resources bundle
+            will be stored. Default is the value specified by the string
+            constant Action.MESSAGES_KEY. NOTE: The attribute under which this
+            message resources is actually stored will be the key value suffixed
+            by the application prefix for this sub-application null Set to true
+            if you want our message resources to return a null string for
+            unknown message keys, or false to return a message with the bad key
+            value. [true] parameter Configuration parameter to be passed to the
+            createResources() method of our MessageResourcesFactory.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="className" type="xsd:string" use="optional"/>
+         <xsd:attribute name="factory" type="xsd:string" use="optional"/>
+         <xsd:attribute name="key" type="xsd:string" use="optional"/>
+         <xsd:attribute name="null" use="optional">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="true"/>
+                  <xsd:enumeration value="false"/>
+                  <xsd:enumeration value="yes"/>
+                  <xsd:enumeration value="no"/>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:attribute>
+         <xsd:attribute name="parameter" type="xsd:string" use="required"/>
+      </xsd:complexType>
+   </xsd:element>
+
+	<xsd:element name="contentService">
+		<xsd:annotation>
+			<xsd:documentation>Provides services for accessing content management
+				system.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+	            <xsd:element ref="setProperty" minOccurs="0" maxOccurs="unbounded"/>
+	            <xsd:element name="query" type="contentQuery" minOccurs="0" 
+	            	maxOccurs="unbounded">
+	            </xsd:element>
+	            <xsd:element name="publish" type="contentPublish" minOccurs="0" 
+	            	maxOccurs="unbounded">
+	            </xsd:element>
+				<!--xsd:element name="search" type="contentSearch" minOccurs="0" maxOccurs="unbounded">
+				</xsd:element>
+				<xsd:element name="file" type="contentFile" minOccurs="0" maxOccurs="unbounded">
+				</xsd:element>
+				<xsd:element name="options" type="contentOptions" minOccurs="0" maxOccurs="unbounded">
+				</xsd:element-->
+			</xsd:sequence>
+			<xsd:attribute name="name" use="required"></xsd:attribute>
+			<xsd:attribute name="jndiServerURL" use="required"></xsd:attribute>
+			<xsd:attribute name="jndiWebRootURL" use="required"></xsd:attribute>
+			<xsd:attribute name="jndiServerReference" use="required"></xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:complexType name="contentQuery">
+		<xsd:annotation>
+			<xsd:documentation>
+			   Represents query operations performed on the Content Management System.
+			   Queries can be of type search, get a specific file, etc.,
+			name 
+			   Unique name of the query 
+			actionURL 
+			   URL used for rewriting
+			queryType 
+			   Type of the query to execute
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="parameter" minOccurs="1" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:simpleContent>
+					<xsd:extension base="xsd:string">
+						<xsd:attribute name="type" type="xsd:string" use="required"/>
+					</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="actionURL" type="xsd:string" use="optional"/>
+		<xsd:attribute name="queryType" use="required">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="GET_ACTIVE_WORKFLOWS"></xsd:enumeration>
+					<xsd:enumeration value="GET_ALIASES"></xsd:enumeration>
+					<xsd:enumeration value="GET_ALL_PROVIDERS"></xsd:enumeration>
+					<xsd:enumeration value="GET_ARCHIVED_FILE"></xsd:enumeration>
+					<xsd:enumeration value="GET_DOC_CONFIG_INFO"></xsd:enumeration>
+					<xsd:enumeration value="GET_DOC_PAGE"></xsd:enumeration>
+					<xsd:enumeration value="GET_DOCEXTENSIONS"></xsd:enumeration>
+					<xsd:enumeration value="GET_DOCTYPES"></xsd:enumeration>
+					<xsd:enumeration value="GET_DYNAMIC_CONVERSION"></xsd:enumeration>
+					<xsd:enumeration value="GET_DYNAMIC_PAGE"></xsd:enumeration>
+					<xsd:enumeration value="GET_DYNAMIC_URL"></xsd:enumeration>
+					<xsd:enumeration value="GET_FILE"></xsd:enumeration>
+					<xsd:enumeration value="GET_FILE_BY_NAME"></xsd:enumeration>
+					<xsd:enumeration value="GET_FILELIST"></xsd:enumeration>
+					<xsd:enumeration value="GET_OPTION_LIST"></xsd:enumeration>
+					<xsd:enumeration value="GET_PROJECT_INFO"></xsd:enumeration>
+					<xsd:enumeration value="GET_PROVIDER_INFO"></xsd:enumeration>
+					<xsd:enumeration value="GET_SEARCH_RESULTS"></xsd:enumeration>
+					<xsd:enumeration value="GET_TABLE"></xsd:enumeration>
+					<xsd:enumeration value="GET_USER_INFO"></xsd:enumeration>
+					<xsd:enumeration value="GET_USERS"></xsd:enumeration>
+					<xsd:enumeration value="GET_WORKFLOW_INFO_BYNAME"></xsd:enumeration>
+					<xsd:enumeration value="DOC_INFO"></xsd:enumeration>
+					<xsd:enumeration value="DOC_INFO_BY_NAME"></xsd:enumeration>
+					<xsd:enumeration value="SUBSCRIPTION_LIST"></xsd:enumeration>
+				</xsd:restriction>				
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+<xsd:complexType name="contentPublish">
+		<xsd:annotation>
+			<xsd:documentation>
+			   Represents publish operations performed on the Content Management System.
+			   Publish operations can be of type check-in, check-out, etc.,
+			name 
+			   Unique name of the publish operation 
+			publishType 
+			   Type of the publish to execute
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="parameter" minOccurs="1" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:simpleContent>
+					<xsd:extension base="xsd:string">
+						<xsd:attribute name="type" type="xsd:string" use="required"/>
+					</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="publishType" use="required">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ADD_GROUP"></xsd:enumeration>
+					<xsd:enumeration value="CHECKIN_LIST"></xsd:enumeration>
+					<xsd:enumeration value="CHECKIN_NEW"></xsd:enumeration>
+					<xsd:enumeration value="CHECKIN_SEL_FORM"></xsd:enumeration>
+					<xsd:enumeration value="CHECKIN_UNIVERSAL"></xsd:enumeration>
+					<xsd:enumeration value="CHECKOUT"></xsd:enumeration>
+					<xsd:enumeration value="CHECKOUT_BY_NAME"></xsd:enumeration>
+					<xsd:enumeration value="UNDO_CHECKOUT"></xsd:enumeration>
+					<xsd:enumeration value="DELETE_REV"></xsd:enumeration>
+					<xsd:enumeration value="SUBSCRIBE"></xsd:enumeration>
+					<xsd:enumeration value="UNSUBSCRIBE"></xsd:enumeration>
+					<xsd:enumeration value="WORKFLOW_APPROVE"></xsd:enumeration>
+				</xsd:restriction>				
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+   <xsd:element name="views">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "views" element describes a set of User Agent based browser
+            views which can be configured for different browsers and wireless
+            devices servletName Name of the servlet from web.xml that has the
+            servlet ClassName 'com.glic.ea.framework.view.ViewServlet' or its
+            extensions thereof.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="view" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="viewType" minOccurs="0" maxOccurs="unbounded">
+               <xsd:complexType>
+                  <xsd:attribute name="rootPath" type="xsd:string"/>
+                  <xsd:attribute name="extension" type="xsd:string"/>
+                  <!--xsd:attribute name="servletName" type ="xsd:string" 
+			            	use="optional"/-->
+                  <xsd:attribute name="className" type="xsd:string"
+                     use="optional"/>
+               </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="serializer" minOccurs="0" maxOccurs="unbounded">
+            	<xsd:annotation>
+            	   <xsd:documentation>
+            	      The element represents the serializer class that should 
+            	      be used for serializing.
+            	   </xsd:documentation>
+            	</xsd:annotation>
+            	<xsd:complexType>
+            		<xsd:attribute name="method" type="xsd:string" use="required"/>
+            		<xsd:attribute name="type" type="xsd:string" use="required"/>
+            	</xsd:complexType>
+            </xsd:element>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="className" type="xsd:string" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="view">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "view" element describes a single User Agent configuration
+            parameters based on a browser type. 
+         className Implementation
+            subclass of the standard configuration bean, if you do not want to
+            use the standard value. [com.glic.ea.framework.config.ViewConfig]
+         userAgent Browser based user agent name. This can be partly equal
+            to the name of the browser's userAgent. This is hierarchical in
+            nature and the best fit for the current browser request will be
+            considered. Note: If the browsers user agent is 'MSIE IE 5.5', the
+            current user agent name can be 'MSIE' which will support all IE
+            based browsers. relativePath The path relative to the root of the
+            views configuration. This will suffixed to the actual path of the
+            xsl file provided in the &lt;forward&gt; attribute path=. If
+            relative path is not specified it will be defaulted to "". Note: If
+            &lt;views &gt; &lt;root path= "/WEB-INF/xsl" extension="xsl" /&gt;
+            &lt;view userAgent = "MSIE" relativePath="IE" /&gt; &lt;/views&gt;
+            and &lt;forward path="/test.xsl"/&gt; then the fully qualified path
+            of the file is rootPath + relativePath + forwardPath
+            /WEB-INF/xsl/IE/test.xsl within the Context.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="setProperty" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="compatibleUserAgent" type="xsd:string"
+               minOccurs="0"
+               maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="className" type="xsd:string" use="optional"/>
+         <xsd:attribute name="userAgent" type="xsd:string"/>
+         <xsd:attribute name="relativePath" type="xsd:string" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="plugin">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "plugin" element specifies the fully qualified class name of
+            a general purpose application plug-in module that receives
+            notification of application startup and shutdown events. An
+            instance of the specified class is created for each element, and
+            can be configured with nested "setProperty" elements. The following
+            attributes are supported: 
+         className Fully qualified Java class name
+            of the plug-in class (must implement org.apache.struts.PlugIn).
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="setProperty" minOccurs="0" maxOccurs="unbounded"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="className" type="xsd:string" use="required"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="description">
+      <xsd:annotation>
+         <xsd:documentation>
+            ========== Subordinate Elements
+            ====================================== The "description" element
+            contains descriptive (paragraph length) text about the surrounding
+            element, suitable for use in GUI tools.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="displayName">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "displayName" element contains a short (one line) description
+            of the surrounding element, suitable for use in GUI tools.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="icon">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "icon" element contains a small-icon and large-icon element
+            which specify the location, relative to the Struts configuration
+            file, for small and large images used to represent the surrounding
+            element in GUI tools.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:sequence minOccurs="1" maxOccurs="1">
+            <xsd:element ref="smallIcon" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="largeIcon" minOccurs="0" maxOccurs="1"/>
+         </xsd:sequence>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="largeIcon">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "largeIcon" element specifies the location, relative to the
+            configuration file, of a resource containing a large (32x32 pixel)
+            icon image.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="setProperty">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "setProperty" element specifies the name and value of an
+            additional JavaBeans configuration property whose setter method
+            will be called on the object that represents our surrounding
+            element. This is especially useful when an extended implementation
+            class (with additional properties) is configured on the
+            (globalForwards) or (actionMappings) elements. The following
+            attributes are defined: 
+         property Name of the JavaBeans property
+            whose setter method will be called. value String representation of
+            the value to which this property will be set, after suitable type
+            conversion
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+         <xsd:attribute name="property" type="xsd:string" use="required"/>
+         <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="smallIcon">
+      <xsd:annotation>
+         <xsd:documentation>
+            The "smallIcon" element specifies the location, relative to the
+            configuration file, of a resource containing a small (16x16 pixel)
+            icon image.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexType>
+         <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:complexType name="JMSService">
+      		<xsd:sequence>
+   		<xsd:element name="broker" minOccurs="1" maxOccurs="1"/>
+   		<xsd:choice minOccurs="1" maxOccurs="unbounded">
+   	 		<xsd:element name="queue" type="Queue"  />
+         	<xsd:element name="topic" type="Topic" />
+   		</xsd:choice>
+   		<xsd:element name="expiryTime" minOccurs="0" maxOccurs="1"/>	
+   		<xsd:element name="waitingTime" minOccurs="0" maxOccurs="1"/>		
+   		</xsd:sequence>
+   		
+   		<xsd:attribute name="name" type="xsd:string"></xsd:attribute>
+   		<xsd:attribute name="providerURL" type="xsd:string"></xsd:attribute>
+   	</xsd:complexType>	
+   
+   	<xsd:complexType name="Queue" mixed="true">
+   		<xsd:attribute name="usage">
+   		<xsd:simpleType>
+   			<xsd:restriction base="xsd:string">
+   				<xsd:enumeration value="request"/>
+   				<xsd:enumeration value="response"/>
+   			</xsd:restriction>	
+   		</xsd:simpleType>
+   		</xsd:attribute>
+   		
+   		<xsd:attribute name="encoding">
+   		<xsd:simpleType>
+   			<xsd:restriction base="xsd:string">
+   				<xsd:enumeration value="none"/>
+   				<xsd:enumeration value="SOAP"/>
+   				<xsd:enumeration value="schema"/>
+   				<xsd:enumeration value="CSV"/>
+   			</xsd:restriction>
+   		</xsd:simpleType>
+   		</xsd:attribute>
+   	</xsd:complexType>
+   	
+   	
+   	<xsd:complexType name="Topic" mixed="true">
+   		<xsd:attribute name="usage">
+   		<xsd:simpleType>
+   			<xsd:restriction base="xsd:string">
+   				<xsd:enumeration value="request"/>
+   				<xsd:enumeration value="response"/>
+   			</xsd:restriction>
+   		</xsd:simpleType>
+   		</xsd:attribute>
+   		
+   		<xsd:attribute name="encoding">
+   		<xsd:simpleType>
+   			<xsd:restriction base="xsd:string">
+   				<xsd:enumeration value="none"/>
+   				<xsd:enumeration value="SOAP"/>
+   				<xsd:enumeration value="schema"/>
+   				<xsd:enumeration value="CSV"/>
+   			</xsd:restriction>	
+   		</xsd:simpleType>
+   		</xsd:attribute>
+   	</xsd:complexType>
+   	
+   	<xsd:complexType name="Listeners" >
+   		<xsd:sequence>
+   		<xsd:element name="jmsListener" type="JMSListener" minOccurs="0" maxOccurs="unbounded"/>
+   		</xsd:sequence>
+   	</xsd:complexType>
+   	
+   	<xsd:complexType name="JMSListener" >
+         	<xsd:sequence>
+          	<xsd:element name="registerService" type="RegisterService" minOccurs="1" maxOccurs="unbounded"></xsd:element>
+          	</xsd:sequence>
+
+         	<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+         	<xsd:attribute name="destination" type="xsd:string" use="required"></xsd:attribute>
+         	<xsd:attribute name="broker" type="xsd:string" use="required"></xsd:attribute>
+          	<xsd:attribute name="destinationType" type="xsd:string" use="required"></xsd:attribute>
+    	</xsd:complexType>
+   
+   	<xsd:complexType name="RegisterService">
+          	<xsd:attribute name="messageType" type="xsd:string"></xsd:attribute>
+          	<xsd:attribute name="businessObject" type="xsd:string"></xsd:attribute>
+          	<xsd:attribute name="serviceName" type="xsd:string" use="required"></xsd:attribute>
+          	<xsd:attribute name="serviceType" type="xsd:string" use="required"></xsd:attribute>
+       </xsd:complexType>
+       
+       <xsd:complexType name="RuleServices">
+   		<xsd:sequence minOccurs="1" maxOccurs="1">
+   			<xsd:element name ="configFile" type="ConfigFile"></xsd:element>
+   		</xsd:sequence>
+   	</xsd:complexType>	
+   	
+   	<xsd:complexType name="ConfigFile" mixed="true">
+   			<xsd:attribute name="type" type="xsd:string" use="required"></xsd:attribute>
+   	</xsd:complexType>
+
+<!-- CICS Sercice -->
+   <xsd:complexType name="CICSService">
+      	<xsd:sequence>
+   		 <xsd:element name="gatewayURL" minOccurs="1" maxOccurs="1"/>
+   		 <xsd:element name="server" minOccurs="1" maxOccurs="1"/>
+   		 <xsd:element name="programName" minOccurs="1" maxOccurs="1"/>
+   		 <xsd:element name="commareaSize" minOccurs="1" maxOccurs="1"/>
+   	 	 <xsd:element name="input" type="InOut" minOccurs="0" maxOccurs="unbounded"/>
+   	 	 <xsd:element name="output" type="InOut" minOccurs="0" maxOccurs="unbounded"/>
+   		</xsd:sequence>	
+   		<xsd:attribute name="name" type="xsd:string"></xsd:attribute>
+    </xsd:complexType>	
+	<xsd:complexType name="InOut"> 
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+	 	<xsd:attribute name="startingPosition" type="xsd:string" use="required"></xsd:attribute>
+	 	<xsd:attribute name="length" type="xsd:string" use="required"></xsd:attribute>
+   	</xsd:complexType>
+   	
+<!-- Domino Service -->
+
+	<xsd:complexType name="DominoService">
+		<xsd:sequence>
+			<xsd:element name="addressBook" type="AddressBook" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="eMail" type="EMail" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="viewEMail" type="ViewEMail" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="phoneBook" type="PhoneBook" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="contactUsInternal" type="ContactUsInternal" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="calendar" type="Calendar" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="corpCalendar" type="CorpCalendar" minOccurs="0" maxOccurs="unbounded"/>		
+			<xsd:element name="employeeHandbook" type="EmployeeHandbook" minOccurs="0" maxOccurs="unbounded"/>				
+			<xsd:element name="jobPosting" type="JobPosting" minOccurs="0" maxOccurs="unbounded"/>						
+			<xsd:element name="menu" type="Menu" minOccurs="0" maxOccurs="unbounded"/>						
+			<xsd:element name="transitCheck" type="TransitCheck" minOccurs="0" maxOccurs="unbounded"/>						
+		</xsd:sequence>	
+		<xsd:attribute name="name" type="xsd:string"  use="required"></xsd:attribute>
+		<xsd:attribute name="jndiHostName" type="xsd:string"  use="required"></xsd:attribute>
+	</xsd:complexType>	
+	<xsd:complexType name="AddressBook"> 
+		<xsd:sequence>
+		<xsd:element name="dominoQuery" type="DominoQuery" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="databaseType" type="DatabaseType" use="required"></xsd:attribute>
+		<xsd:attribute name="viewType" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="EMail"> 
+		<xsd:sequence>
+			<xsd:element name="subject" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="body" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="saveOnSend" use="required">
+   		<xsd:simpleType>
+   			<xsd:restriction base="xsd:string">
+   				<xsd:enumeration value="true"/>
+   				<xsd:enumeration value="false"/>
+   			</xsd:restriction>
+   		</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="signOnSend" use="required">
+   		<xsd:simpleType>
+   			<xsd:restriction base="xsd:string">
+   				<xsd:enumeration value="true"/>
+   				<xsd:enumeration value="false"/>
+   			</xsd:restriction>
+   		</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="ViewEMail"> 
+		<xsd:sequence>
+		<xsd:element name="dominoQuery" type="DominoQuery" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="viewType" type="xsd:string" use="required"></xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="PhoneBook"> 
+		<xsd:sequence>
+		<xsd:element name="dominoQuery" type="DominoQuery" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="databaseType" type="DatabaseType" use="required"></xsd:attribute>
+		<xsd:attribute name="viewType" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="ContactUsInternal"> 
+		<xsd:sequence>
+		<xsd:element name="dominoQuery" type="DominoQuery" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="databaseType" type="DatabaseType" use="required"></xsd:attribute>
+		<xsd:attribute name="viewType" type="xsd:string" use="required"></xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="Calendar"> 
+		<xsd:sequence>
+		<xsd:element name="dominoQuery" type="DominoQuery" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="viewType" type="xsd:string" use="required"></xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="CorpCalendar"> 
+		<xsd:sequence>
+		<xsd:element name="dominoQuery" type="DominoQuery" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="databaseType" type="DatabaseType" use="required"></xsd:attribute>
+		<xsd:attribute name="viewType" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="EmployeeHandbook"> 
+		<xsd:sequence>
+		<xsd:element name="dominoQuery" type="DominoQuery" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="databaseType" type="DatabaseType" use="required"></xsd:attribute>
+		<xsd:attribute name="viewType" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="JobPosting"> 
+		<xsd:sequence>
+		<xsd:element name="dominoQuery" type="DominoQuery" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="databaseType" type="DatabaseType" use="required"></xsd:attribute>
+		<xsd:attribute name="viewType" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="Menu"> 
+		<xsd:sequence>
+		<xsd:element name="dominoQuery" type="DominoQuery" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="databaseType" type="DatabaseType" use="required"></xsd:attribute>
+		<xsd:attribute name="viewType" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="TransitCheck"> 
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="databaseType" type="DatabaseType" use="required"></xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:simpleType name="DatabaseType">
+		<xsd:restriction base="xsd:string">
+	  		<xsd:minLength value="1" /> 
+		</xsd:restriction>
+	</xsd:simpleType>						
+	<xsd:complexType name="DominoQuery">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+			<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+			<xsd:attribute name="resultCount" type="xsd:string"></xsd:attribute>
+			<xsd:attribute name="startRecord" type="xsd:string"></xsd:attribute>
+		</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+		<xsd:complexType name="Adapters">
+		<xsd:sequence>
+			<xsd:element name="jdbcAdapter" type="JdbcAdapter" minOccurs="0" maxOccurs="unbounded" />	
+			<xsd:element name="cicsAdapter" type="CICSAdapter" minOccurs="0" maxOccurs="unbounded" />	
+		</xsd:sequence>	
+	</xsd:complexType>
+	
+	<xsd:complexType name="JdbcAdapter">
+		<xsd:sequence>
+			<xsd:element name="accessBean" type="JDBCAccessBean" minOccurs="1" maxOccurs="unbounded" />	
+		</xsd:sequence>		
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="jndiName" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="propertyFileName" type="xsd:string" use="optional"></xsd:attribute>
+		
+	</xsd:complexType>
+	
+	<xsd:complexType name="JDBCAccessBean">
+		<xsd:sequence>
+			<xsd:element name="method" type="JDBCMethod" minOccurs="1" maxOccurs="unbounded" />	
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="className" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="propertyFileName" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="JDBCMethod">
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="type" use="required">
+		<xsd:simpleType>
+   			<xsd:restriction base="xsd:string">
+   				<xsd:enumeration value="query"/>
+   				<xsd:enumeration value="procedure"/>
+   				<xsd:enumeration value="persist"/>
+   			</xsd:restriction>
+   		</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="fetchSize" type="xsd:string" use="optional"></xsd:attribute>
+		<xsd:attribute name="orderBy" type="xsd:string" use="optional"></xsd:attribute>
+		<xsd:attribute name="output" type="xsd:string" use="optional"></xsd:attribute>
+		<xsd:attribute name="propertyKey" type="xsd:string" use="optional"></xsd:attribute>
+		</xsd:complexType>
+	
+	<xsd:complexType name="CICSAdapter">
+			<xsd:sequence>
+				<xsd:element name="accessBean" type="CICSAccessBean" minOccurs="1" maxOccurs="unbounded" />	
+			</xsd:sequence>		
+			<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+			<xsd:attribute name="jndiName" type="xsd:string" use="required"></xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="CICSAccessBean">
+		<xsd:sequence>
+			<xsd:element name="method" type="CICSMethod" minOccurs="0" maxOccurs="unbounded" />	
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="programName" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="commareaSize" type="xsd:string" use="required"></xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="Parameter">
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="type" use="required">
+		<xsd:simpleType>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="String"/>
+			<xsd:enumeration value="Short"/>
+			<xsd:enumeration value="Integer"/>
+			<xsd:enumeration value="Long"/>
+			<xsd:enumeration value="BigDecimal"/>
+		</xsd:restriction>
+		</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="startingPosition" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="length" type="xsd:string" use="required"></xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="CICSMethod">
+		<xsd:sequence>
+			<xsd:element name="input" type="Parameter" minOccurs="0" maxOccurs="unbounded" />	
+			<xsd:element name="output" type="Parameter" minOccurs="0" maxOccurs="unbounded" />	
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="propertyKey" type="xsd:string" use="optional"></xsd:attribute>
+	</xsd:complexType>
+
+	
+</xsd:schema>

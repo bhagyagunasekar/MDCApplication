@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="MDC" default="build" basedir=".">
+
+	<presetdef name="javac">
+	    <javac includeantruntime="false" />
+	</presetdef>
+	<!-- Build Number: Has to be changed before the script is run-->
+	<property name="build.number" value="1.0.0"/>
+	
+	<!-- final artifacts will be copied to this directory -->
+	<property name="release.dir" value="dist"/>
+	<property name="mdc.home" value="."/>
+	
+	<!-- source folder -->
+	<property name="mdc.workspace" value="."/>
+	
+	
+	<!-- was and wps settings -->
+	<property name="tomcat.home" value="${mdc.home}/utility"/>
+	
+	<property name="mdc.lib" value="${mdc.home}"/>
+	
+		
+	<!-- MDCSiteApp variales -->
+	<property name="mdcsiteapp.source" value="${mdc.workspace}/MDCSiteApp/src"/>
+	<property name="mdcsiteapp.webcontent" value="${mdc.workspace}/MDCSiteApp/WebContent"/>
+	<property name="mdcsiteapp.web.inf.source" value="${mdc.workspace}/MDCSiteApp/WebContent/WEB-INF"/>
+	<property name="mdcsiteapp.build" value="build/MDCSiteApp"/>
+	<property name="mdcsiteapp.outFile" value="MDCSiteApp"/>
+		
+	<target name="mdc-classpath" depends="clean">
+			<path id="app.classpath">
+				<pathelement location="${tomcat.home}/servlet-api.jar"/>
+							
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/avalon-framework-cvs-20020315.jar"/>
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/avalon-framework-cvs-20020806.jar"/>
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/batik.jar"/>
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/commons-beanutils.jar"/>
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/commons-collections.jar"/>
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/commons-digester.jar"/>
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/commons-logging.jar"/>
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/eaf_5.02.1.jar"/>
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/eafsecurityClient.jar"/>
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/javax.mail.jar"/>
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/jms.jar"/>
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/log4j-1.2.8.jar"/>
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/xerces.jar"/>
+				<pathelement location="${mdcsiteapp.webcontent}/WEB-INF/lib/xerces-2_6_2.jar"/>
+			</path>	
+	</target>
+	
+	<!-- jars and wars building -->
+	
+	<!-- MDCSiteApp -->
+	<target name="mdcsiteapp-init" depends="init">
+		<mkdir dir="${mdcsiteapp.build}"/>
+		<mkdir dir="${mdcsiteapp.build}/WEB-INF/classes"/>
+		<mkdir dir="${mdcsiteapp.build}/WEB-INF/lib"/>
+	</target>
+
+	<target name="mdcsiteapp-copy">	
+		<copy todir="${mdcsiteapp.build}/WEB-INF">
+			<fileset dir="${mdcsiteapp.web.inf.source}"
+				excludes=".classpath,.project,.ecl,.dm,.dmdb"/>
+		</copy>
+		<copy todir="${mdcsiteapp.build}">
+			<fileset dir="${mdcsiteapp.webcontent}"
+					excludes=".classpath,.project,.dm,.dmdb"/>
+		</copy>
+	</target>
+	
+	<target name="mdcsiteapp-compile" depends="mdcsiteapp-init">		
+		<javac srcdir="${mdcsiteapp.source}" destdir="${mdcsiteapp.build}/WEB-INF/classes" debug="true" deprecation="No">
+			<classpath refid="app.classpath"/>
+		</javac>		
+	</target>	
+
+	<target name="mdcsiteapp-dist" depends="mdcsiteapp-compile,mdcsiteapp-copy">
+		<jar jarfile="${distribute}/${mdcsiteapp.outFile}.war" basedir="${mdcsiteapp.build}"/>
+	</target>
+	
+	
+	<!-- MDCSiteApp End-->
+
+	<!-- copy from build machine to portal machine -->
+	<target name="copytocurrentbuild">
+		
+		<copy todir="${mdc.home}/dist/currentbuild">
+			<fileset dir="${distribute}"	
+		    		includes="*.*"/>
+		</copy>
+	</target>
+	
+	<!-- clean up previous build process and set classpath -->
+	<target name="init" depends="mdc-classpath,clean">
+		<mkdir dir="${release.dir}"/>
+		<tstamp/>
+		<property name="distfolder" value="${DSTAMP}_${TSTAMP}"/>
+		<property name="distribute" value="${release.dir}/${build.number}/${distfolder}"/>
+		<mkdir dir="${distribute}"/>
+	</target>
+	
+	
+	<!-- Clean build directory -->
+	<target name="clean-build">
+		<delete dir="build"/>
+	</target>
+	
+	<!-- Clean Release directory -->
+	<target name="clean-release">
+		<delete>
+			<fileset dir="${release.dir}" includes="*.*"/>
+		</delete>
+	</target>
+		
+	<!-- clean up -->
+	<target name="clean" depends="clean-build"/>
+	
+	
+	<!-- clean the jars and wars created before task build or buildbasic -->
+	<target name="clean-temp-jarswars">
+		<delete> 
+			<fileset dir="${mdc.lib}" includes="*.jar,*.war,*.ear"/>
+		</delete>
+		
+	</target>
+	
+	<!-- Build all -->
+	<target name="build" depends="clean-temp-jarswars,mdcsiteapp-dist,copytocurrentbuild">
+	</target>
+	
+</project>

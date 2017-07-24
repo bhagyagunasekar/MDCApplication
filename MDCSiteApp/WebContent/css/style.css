@@ -1,0 +1,101 @@
+/* CSS Document */
+body 	{ margin-top:0px; margin-left: 0px; margin-width:0px; margin-height:0px; margin-right:0px;}
+
+table, tr, td, select, input, form, li, p, textarea 
+			{ font-size: 12px; color: #333333; font-family: arial;}
+.disclosure_text { font-size: 13px; color: #333333; font-family: Times New Roman;}
+			
+a			{ font-weight: normal; font-size: 12px; color: #333333; font-family: arial; text-decoration:underline; }
+.whitetext	{ font-weight: normal; font-size: 11px; color: #FFFFFF; font-family: arial; text-decoration:none; }
+
+.gold_link	{ font-weight: normal; font-size: 12px; color: #996600; font-family: arial; text-decoration:underline; }
+.generic_link	{ font-weight: normal; font-size: 12px; color: #666699; font-family: arial; text-decoration:underline; }
+.generic_link:hover	{ font-weight: normal; font-size: 12px; color: #669999; font-family: arial; text-decoration:underline; }
+.generic_link:active, .generic_link:visited	{ font-weight: normal; font-size: 12px; color: #996699; font-family: arial; text-decoration:underline; }
+.goldtd{font-size: 12px; color: #996600; font-family: arial;}
+.home_link_normal	{ font-weight: normal; font-size: 12px; color: #000000; font-family: arial; font-weight: bold; }
+.home_link_mouseover { font-weight: normal; font-size: 12px; color: #996600; font-family: arial; font-weight: bold;}
+.small_goldtd{font-size: 11px; color: #996600; font-family: arial;}
+/* unselected tabs*/
+.wpsTabs, .wpsTabs:visited, .wpsTabs:hover, .wpsTabs:active    {  font-size: 9pt; font-weight: bold; color: #000000; text-decoration: none; }
+
+/* selected tab */
+.wpsSelectedTab, .wpsSelectedTab:visited, .wpsSelectedTab:hover, .wpsSelectedTab:active {  font-size: 9pt; font-weight: bold; color: #FFCC66; text-decoration: none; background-color:#999966; }
+
+/* selected group tabs has red background*/
+.wpsGroupSelectedTab, .wpsGroupSelectedTab:visited, .wpsGroupSelectedTab:hover, .wpsGroupSelectedTab:active {  font-size: 12px; font-weight: bold; color: #FFCC66; text-decoration: none; background-color: #996666;  font-family: arial; }
+.wpsSubSelectedTab, .wpsSubSelectedTab:visited, .wpsSubSelectedTab:hover, .wpsSubSelectedTab:active {  font-size: 12px; font-weight: bold; color: #FFFFFF; text-decoration: none; background-color: #996666;  font-family: arial; }
+/* selected group tabs with teal background*/
+.wpsSubGroupSelectedTab, .wpsSubGroupSelectedTab:visited, .wpsSubGroupSelectedTab:hover, .wpsSubGroupSelectedTab:active {  font-size: 9pt; font-weight: bold; color: #FFCC66; text-decoration: none; background-color:#669999; }
+.wpsSubSubSelectedTab, .wpsSubSubSelectedTab:visited, .wpsSubSubSelectedTab:hover, .wpsSubSubSelectedTab:active {  font-size: 9pt; font-weight: bold; color: #996600; text-decoration: none; background-color:#FFFFFF; }
+
+.light_gold_table {cell-padding: 0;cell-spacing: 0;border-width: 1; border-style: solid; border-color: #CCCC99; position:relative;}
+
+.gold_table {cell-padding: 0;cell-spacing: 0;border-width: 1; border-style: solid; border-color: #999966; position:relative;}
+.gold_block {cell-padding: 0;	cell-spacing: 0; border-width: 1; border-style: solid; border-color: #999966; position:relative; margin-bottom:15;}
+.grey_block {cell-padding: 0;	cell-spacing: 0; border-width: 1; border-style: solid; border-color: #CCCCCC; position:relative; margin-bottom:15;}
+.teal_block {cell-padding: 0;	cell-spacing: 0; border-width: 1; border-style: solid; border-color: #669999; position:relative; margin-bottom:15;}
+.red_table {cell-padding: 0;cell-spacing: 0;border-width: 1; border-style: solid; border-color: #996666; position:relative;}
+.middle_portlet_skin {cell-padding: 0;	cell-spacing: 0; border-width: 1; border-style: solid; border-color: #996600; position:relative; margin-left:15;	margin-right:15;}
+.middle_portlet_header {cell-padding: 0; cell-spacing: 0; background-color: #996600; border-width: 1; border-style: solid; border-color: #996600; position:relative; margin-top:15; margin-left:15; margin-right:15;}
+
+.portlet_table {cell-padding: 0; cell-spacing: 0; border-width: 1; border-style: solid; border-color: #999966; position:relative; margin-bottom:15; margin-top:15; margin-left:15; margin-right:15;}
+.rp_header_teal {cell-padding: 0; cell-spacing: 0; background-color: #669999; position:relative; margin-top:15;}
+.rp_block_teal {cell-padding: 0; cell-spacing: 0;border-width:1; border-style:solid; border-color:#669999; position:relative;}
+
+.rp_header_gold {cell-padding: 0; cell-spacing: 0; background-color: #999966; position:relative; margin-top:15;}
+.rp_block_gold {cell-padding: 0; cell-spacing: 0;border-width:1; border-style:solid; border-color:#999966; position:relative;}
+
+.rp_header_red {cell-padding: 0; cell-spacing: 0; background-color: #996666; position:relative; margin-top:15;}
+.rp_block_red {cell-padding: 0; cell-spacing: 0;border-width:1; border-style:solid; border-color:#999966; position:relative;}
+
+.rp_header_blue {cell-padding: 0; cell-spacing: 0; background-color: #666699; position:relative; margin-top:15;}
+.rp_block_blue {cell-padding: 0; cell-spacing: 0;border-width:1; border-style:solid; border-color:#666699; position:relative;}
+
+.rp_header_green {cell-padding: 0; cell-spacing: 0; background-color: #669966; position:relative; margin-top:15;}
+.rp_block_green {cell-padding: 0; cell-spacing: 0;border-width:1; border-style:solid; border-color:#669966; position:relative;}
+
+.rp_header_purple {cell-padding: 0; cell-spacing: 0; background-color: #996699; position:relative; margin-top:15;}
+.rp_block_purple {cell-padding: 0; cell-spacing: 0;border-width:1; border-style:solid; border-color:#996699; position:relative;}
+
+.skinless_table {cell-padding: 0; cell-spacing: 0; border-width: 0; position:relative; margin-bottom:15; margin-top:15; margin-left:15; margin-right:15;}
+
+.button     {font-family: arial; font-size: 12px; font-weight: bold; color: #996600; background-color:white; border-left: 1px solid #996600; border-right: 1px solid #996600; border-top: 1px solid #996600; border-bottom: 1px solid #996600;}
+.five_char_textfield {font-family: arial; width: 40px;}
+.eight_char_textfield {font-family: arial; width: 70px;}
+.fifty_char_textfield {font-family: arial; width: 340px;}
+
+.error		{ font-weight: normal; font-size: 11px; color: #FF3300; font-family: arial; text-decoration:none; }
+.redtext	{ font-weight: normal; font-size: 12px; color: #FF3300; font-family: arial; text-decoration:none; }
+.bluetext	{ font-weight: normal; font-size: 13px; color: blue; font-family: arial; text-decoration:none; }
+.goldtext	{ font-weight: normal; font-size: 20px; color: #999966; font-family: arial; text-decoration:none; font-weight: bold;}
+
+h1 {font-family: Times New Roman; font-size: 32px; color:#996600; margin-bottom:12px; margin-top:1px;}
+h2 {font-family: Times New Roman; font-size: 16px; color:#996600; margin-bottom:2px; margin-top:1px;}
+h3 {font-family: Times New Roman; font-size: 14px; color:#669999; margin-bottom:2px; margin-top:1px;}
+h4 {font-family: Times New Roman; font-size: 20px; color:#999966; margin-bottom:12px; margin-top:1px; font-weight: bold;}
+h5 {font-family: arial; font-size: 14px; color:black; margin-bottom:2px; margin-top:1px;}
+h6 {font-family: Times New Roman; font-size: 20px; color:black; margin-bottom:2px; margin-top:1px;}
+h7 {font-family: Times New Roman; font-size: 12x; color:black; margin-bottom:2px; margin-top:1px;}
+
+
+.fieldsOn
+{
+	border: 1px solid #669999;
+	background-color: #FFFFEC;
+
+
+}
+.fieldsOff
+{
+	background-color: #FFFFFF;
+	border: 1px solid #669999;
+}
+.popup
+{
+	COLOR: #9F141A;
+	CURSOR: help;
+	TEXT-DECORATION: none
+}
+
+.footer {font-family: arial; font-size: 11px; color:black; margin-bottom:12px; margin-top:1px;}
