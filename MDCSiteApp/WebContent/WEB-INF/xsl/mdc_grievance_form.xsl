@@ -99,7 +99,8 @@
 													<TR>
 
 														<TD>
-															<B>Patient Information - Guardian Insurance Claim</B>
+															<B>Patient Information</B>
+															<!-- <B>Patient Information - Guardian Insurance Claim</B> -->
 														</TD>
 														<TD width="60%">&#160;</TD>
 														<TD>&#160;</TD>
